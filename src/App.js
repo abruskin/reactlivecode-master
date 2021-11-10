@@ -5,7 +5,7 @@ import {requestLogin} from './services/user.js';
 import {requestMemos, createMemo, deleteMemo} from './services/memos.js';
 import {connect} from "react-redux";
 import {initiateLogin, logout} from "./modules/user";
-import {initiateGetMemos} from "./modules/memos";
+import {initiateCreateMemos, initiateGetMemos, initiateDeleteMemos} from "./modules/memos";
 
 function App({
                  dispatch,
@@ -14,48 +14,33 @@ function App({
                  token,
                  getMemosPending,
              getMemosFailure,
-                 memos}) {
+                 memos,
+             createMemosPending,
+             createMemosFailed,
+             deleteMemosPending,
+             deleteMemosFailed,}) {
 
 
-    function handleError(error) {
-        console.log(error)
-    }
 
-    function handleRequestMemos() {
-        dispatch(initiateGetMemos())
-    }
 
 
 function handleLoginRequest(username, password) {
    dispatch(initiateLogin({username, password}))
 }
-
-
-function handleLogoutRequest() {
-    dispatch(logout())
-}
-
-const handleCreateMemo =  (memo) => {
-     createMemo(token, memo).then(response => response.json(),
-        handleError).then((json) => {
-        handleRequestMemos()
-            }, handleError)
-        .catch(handleError);
-
-}
-
-const handleDeleteMemo = async (memo) => {
-        await deleteMemo(token, memo);
-   // setMemos(memos.filter(item => item.id !== memo.id));
-}
-
-
 return (
 
     <Container>
-        {token ? <Memos memos={memos} handleDeleteMemo={handleDeleteMemo}
-                        handleLogoutRequest={handleLogoutRequest}
-                        handleCreateMemo={handleCreateMemo}> </Memos> :
+        {token ? <Memos memos={memos}
+                        handleLogoutRequest={() => dispatch(logout())}
+                        handleDeleteMemo={memo => {dispatch(initiateDeleteMemos(memo))}}
+            handleCreateMemo =  {memo => {dispatch(initiateCreateMemos(memo))}}
+            getMemosPending={getMemosPending}
+                getMemosFailed = {getMemosFailure}
+            createMemosPending={createMemosPending}
+            createMemosFailed={createMemosFailed}
+            deleteMemosPending={deleteMemosPending}
+            deleteMemosFailed={deleteMemosFailed}/>
+            :
             <Login handleLoginRequest={handleLoginRequest}
                    loginPending={loginPending}
             loginFailed={loginFailed}/>}

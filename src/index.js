@@ -7,6 +7,7 @@ import {createStore, applyMiddleware, combineReducers} from 'redux';
 import user from './modules/user';
 import {Provider} from "react-redux";
 import memos from './modules/memos';
+import logger from 'redux-logger';
 
 const asyncMiddleware = storeAPI => next => action => {
     if(typeof action === 'function') {
@@ -15,7 +16,7 @@ const asyncMiddleware = storeAPI => next => action => {
     next(action)
 }
 
-const middlewareEnhancer = applyMiddleware(asyncMiddleware)
+const middlewareEnhancer = applyMiddleware(asyncMiddleware,logger)
 const rootReducer = combineReducers({user, memos})
 const store = createStore(rootReducer, middlewareEnhancer)
 
